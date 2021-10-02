@@ -48,46 +48,46 @@ void Affinity_add(Affinity* this, int id) {
 #ifdef HAVE_LIBHWLOC
 
 Affinity* Affinity_get(Process* proc, ProcessList* pl) {
-   hwloc_cpuset_t cpuset = hwloc_bitmap_alloc();
-   bool ok = (hwloc_get_proc_cpubind(pl->topology, proc->pid, cpuset, HTOP_HWLOC_CPUBIND_FLAG) == 0);
+   hwloc_cpumask_t cpumask = hwloc_bitmap_alloc();
+   bool ok = (hwloc_get_proc_cpubind(pl->topology, proc->pid, cpumask, HTOP_HWLOC_CPUBIND_FLAG) == 0);
    Affinity* affinity = NULL;
    if (ok) {
       affinity = Affinity_new(pl);
-      if (hwloc_bitmap_last(cpuset) == -1) {
+      if (hwloc_bitmap_last(cpumask) == -1) {
          for (int i = 0; i < pl->cpuCount; i++) {
             Affinity_add(affinity, i);
          }
       } else {
          unsigned int id;
-         hwloc_bitmap_foreach_begin(id, cpuset);
+         hwloc_bitmap_foreach_begin(id, cpumask);
             Affinity_add(affinity, id);
          hwloc_bitmap_foreach_end();
       }
    }
-   hwloc_bitmap_free(cpuset);
+   hwloc_bitmap_free(cpumask);
    return affinity;
 }
 
 bool Affinity_set(Process* proc, Arg arg) {
    Affinity *this = arg.v;
-   hwloc_cpuset_t cpuset = hwloc_bitmap_alloc();
+   hwloc_cpumask_t cpumask = hwloc_bitmap_alloc();
    for (int i = 0; i < this->used; i++) {
-      hwloc_bitmap_set(cpuset, this->cpus[i]);
+      hwloc_bitmap_set(cpumask, this->cpus[i]);
    }
-   bool ok = (hwloc_set_proc_cpubind(this->pl->topology, proc->pid, cpuset, HTOP_HWLOC_CPUBIND_FLAG) == 0);
-   hwloc_bitmap_free(cpuset);
+   bool ok = (hwloc_set_proc_cpubind(this->pl->topology, proc->pid, cpumask, HTOP_HWLOC_CPUBIND_FLAG) == 0);
+   hwloc_bitmap_free(cpumask);
    return ok;
 }
 
 #elif defined(HAVE_LINUX_AFFINITY)
 
 Affinity* Affinity_get(Process* proc, ProcessList* pl) {
-   cpu_set_t cpuset;
-   bool ok = (sched_getaffinity(proc->pid, sizeof(cpu_set_t), &cpuset) == 0);
+   cpu_set_t cpumask;
+   bool ok = (sched_getaffinity(proc->pid, sizeof(cpu_set_t), &cpumask) == 0);
    if (!ok) return NULL;
    Affinity* affinity = Affinity_new(pl);
    for (int i = 0; i < pl->cpuCount; i++) {
-      if (CPU_ISSET(i, &cpuset))
+      if (CPU_ISSET(i, &cpumask))
          Affinity_add(affinity, i);
    }
    return affinity;
@@ -95,12 +95,12 @@ Affinity* Affinity_get(Process* proc, ProcessList* pl) {
 
 bool Affinity_set(Process* proc, Arg arg) {
    Affinity *this = arg.v;
-   cpu_set_t cpuset;
-   CPU_ZERO(&cpuset);
+   cpu_set_t cpumask;
+   CPU_ZERO(&cpumask);
    for (int i = 0; i < this->used; i++) {
-      CPU_SET(this->cpus[i], &cpuset);
+      CPU_SET(this->cpus[i], &cpumask);
    }
-   bool ok = (sched_setaffinity(proc->pid, sizeof(unsigned long), &cpuset) == 0);
+   bool ok = (sched_setaffinity(proc->pid, sizeof(unsigned long), &cpumask) == 0);
    return ok;
 }
 
