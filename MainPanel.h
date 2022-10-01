@@ -2,10 +2,6 @@
 #define HEADER_MainPanel
 /*
 htop - ColumnsPanel.h
-(C) 2004-2015 Hisham H. Muhammad
-(C) 2020 Red Hat, Inc.  All Rights Reserved.
-Released under the GNU GPL, see the COPYING file
-in the source distribution for its full text.
 */
 
 #include "Action.h"
