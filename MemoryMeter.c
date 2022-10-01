@@ -61,7 +61,7 @@ MeterClass MemoryMeter_class = {
    },
    .updateValues = MemoryMeter_updateValues,
    .defaultMode = BAR_METERMODE,
-   .maxItems = 3,
+   .maxItems = 4,
    .total = 100.0,
    .attributes = MemoryMeter_attributes,
    .name = "Memory",

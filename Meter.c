@@ -100,26 +100,26 @@ static inline void Meter_displayBuffer(Meter* this, char* buffer, RichString* ou
    }
 }
 
-void Meter_setMode(Meter* this, int modeIndex) {
-   if (modeIndex > 0 && modeIndex == this->mode)
+void Meter_setMode(Meter* this, int modeID) {
+   if (modeID > 0 && modeID == this->mode)
       return;
-   if (!modeIndex)
-      modeIndex = 1;
-   assert(modeIndex < LAST_METERMODE);
+   if (!modeID)
+      modeID = 1;
+   assert(modeID < LAST_METERMODE);
    if (Meter_defaultMode(this) == CUSTOM_METERMODE) {
       this->draw = Meter_drawFn(this);
       if (Meter_updateModeFn(this))
-         Meter_updateMode(this, modeIndex);
+         Meter_updateMode(this, modeID);
    } else {
-      assert(modeIndex >= 1);
+      assert(modeID >= 1);
       free(this->drawData);
       this->drawData = NULL;
 
-      MeterMode* mode = Meter_modes[modeIndex];
+      MeterMode* mode = Meter_modes[modeID];
       this->draw = mode->draw;
       this->h = mode->h;
    }
-   this->mode = modeIndex;
+   this->mode = modeID;
 }
 
 ListItem* Meter_toListItem(Meter* this, bool moving) {
@@ -133,7 +133,7 @@ ListItem* Meter_toListItem(Meter* this, bool moving) {
       xSnprintf(number, 10, " %d", this->param);
    else
       number[0] = '\0';
-   char buffer[51];
+   char buffer[178];
    xSnprintf(buffer, 50, "%s%s%s", Meter_uiName(this), number, mode);
    ListItem* li = ListItem_new(buffer, 0);
    li->moving = moving;
