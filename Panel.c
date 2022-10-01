@@ -91,13 +91,13 @@ void Panel_move(Panel* this, int x, int y) {
    this->needsRedraw = true;
 }
 
-void Panel_resize(Panel* this, int w, int h) {
+void Panel_resize(Panel* this, int w, int height) {
    assert (this != NULL);
 
    if (RichString_sizeVal(this->header) > 0)
-      h--;
+      height--;
    this->w = w;
-   this->h = h;
+   this->h = height;
    this->needsRedraw = true;
 }
 
