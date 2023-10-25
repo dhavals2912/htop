@@ -89,6 +89,13 @@ static HandlerResult ColumnsPanel_eventHandler(Panel* super, int ch) {
          result = HANDLED;
          break;
       }
+      case KEY_F(6):
+      {
+         index_offset = !index_offset;
+         ColumnsPanel_update(super);
+         result = HANDLED;
+         break;
+      }
       default:
       {
          if (0 < ch && ch < 255 && isalpha((unsigned char)ch))
@@ -141,11 +148,14 @@ int ColumnsPanel_fieldNameToIndex(const char* name) {
 
 void ColumnsPanel_update(Panel* super) {
    ColumnsPanel* this = (ColumnsPanel*) super;
+   int index = index_offset ? 1 : 0;
    int size = Panel_size(super);
    this->settings->changed = true;
    this->settings->fields = xRealloc(this->settings->fields, sizeof(ProcessField) * (size+1));
    this->settings->flags = 0;
-   for (int i = 0; i < size; i++) {
+   
+   // Start iterating from 0 or 1 depending on the index_offset
+   for (int i = index; i < size + index; i++) {
       int key = ((ListItem*) Panel_get(super, i))->key;
       this->settings->fields[i] = key;
       this->settings->flags |= Process_fields[key].flags;

@@ -281,6 +281,7 @@ bool Settings_write(Settings* this) {
    #ifdef HAVE_LIBHWLOC
    fprintf(fd, "topology_affinity=%d\n", (int) this->topologyAffinity);
    #endif
+   fprintf(fd, "index_offset=%d\n", (int) (this->index_offset ? 1 : 0));
    fclose(fd);
    return true;
 }
@@ -356,6 +357,7 @@ Settings* Settings_new(int cpuCount) {
    this->enableMouse = true;
    this->changed = false;
    this->delay = DEFAULT_DELAY;
+   this->index_offset = true;
    bool ok = false;
    if (legacyDotfile) {
       ok = Settings_read(this, legacyDotfile);

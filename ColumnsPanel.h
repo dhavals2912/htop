@@ -15,6 +15,8 @@ typedef struct ColumnsPanel_ {
 
    Settings* settings;
    bool moving;
+
+   bool index_offset;
 } ColumnsPanel;
 
 extern PanelClass ColumnsPanel_class;

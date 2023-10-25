@@ -54,6 +54,8 @@ typedef struct Settings_ {
    #endif
 
    bool changed;
+
+   bool index_offset;
 } Settings;
 
 #define Settings_cpuId(settings, cpu) ((settings)->countCPUsFromZero ? (cpu) : (cpu)+1)
